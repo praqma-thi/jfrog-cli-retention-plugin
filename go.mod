@@ -7,4 +7,8 @@ require (
 	github.com/jfrog/jfrog-cli-core/v2 v2.3.0
 	github.com/jfrog/jfrog-client-go v1.4.0
 	github.com/stretchr/testify v1.7.0
+
+
+	github.com/buger/jsonparser v1.1.1
+	github.com/ulikunitz/xz v0.5.9
 )
