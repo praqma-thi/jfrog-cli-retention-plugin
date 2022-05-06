@@ -1,0 +1,9 @@
+{
+    "files": [
+        {
+            "pattern": "my-local-repo/(*)-(*).zip",
+            "target": "froggy/{1}--{2}.zip",
+            "recursive": "false"
+        }
+    ]
+}
