@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"strconv"
 
+	core_utils "github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
 	core_commands "github.com/jfrog/jfrog-cli-core/v2/common/commands"
 	core_components "github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	core_config "github.com/jfrog/jfrog-cli-core/v2/utils/config"
-	core_utils "github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
 	client_artifactory "github.com/jfrog/jfrog-client-go/artifactory"
 	client_services "github.com/jfrog/jfrog-client-go/artifactory/services"
 	client_serviceutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
@@ -20,8 +20,8 @@ import (
 
 type runConfiguration struct {
 	configFile string
-	dryRun bool
-	verbose bool
+	dryRun     bool
+	verbose    bool
 }
 
 func GetRunCommand() core_components.Command {
@@ -87,7 +87,7 @@ func runCmd(context *core_components.Context) error {
 		return err
 	}
 
-	if (runConfig.verbose) {
+	if runConfig.verbose {
 		client_log.Info("runConfig:")
 		client_log.Info("    configFile:", runConfig.configFile)
 		client_log.Info("    dryRun:", runConfig.dryRun)
@@ -101,7 +101,7 @@ func runCmd(context *core_components.Context) error {
 	}
 
 	client_log.Info("Configuring Artifactory manager")
-	artifactoryManager, err := core_utils.CreateServiceManager(artifactoryDetails, -1, runConfig.dryRun)
+	artifactoryManager, err := core_utils.CreateServiceManager(artifactoryDetails, -1, 15000, runConfig.dryRun)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func runCmd(context *core_components.Context) error {
 	client_log.Info("Parsing retention configuration")
 	retentionConfiguration := config.ParseRetentionConfiguration(runConfig.configFile)
 
-	if (runConfig.verbose) {
+	if runConfig.verbose {
 		client_log.Info("retentionConfiguration:")
 		client_log.Info("    Artifact:", len(retentionConfiguration.Artifact))
 		for _, artifactRetention := range retentionConfiguration.Artifact {
@@ -121,7 +121,7 @@ func runCmd(context *core_components.Context) error {
 		}
 	}
 
-	client_log.Info("Executing",  len(retentionConfiguration.Artifact), "artifact retention policies")
+	client_log.Info("Executing", len(retentionConfiguration.Artifact), "artifact retention policies")
 	if err = runArtifactRetention(artifactoryManager, retentionConfiguration.Artifact); err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func runCmd(context *core_components.Context) error {
 
 func runArtifactRetention(artifactoryManager client_artifactory.ArtifactoryServicesManager, artifactRetentions []config.Artifact) error {
 	for i, artifactRetention := range artifactRetentions {
-		client_log.Info(i + 1, "/", len(artifactRetentions), ":", artifactRetention.Name)
+		client_log.Info(i+1, "/", len(artifactRetentions), ":", artifactRetention.Name)
 		aqlQuery, err := ioutil.ReadFile(artifactRetention.AqlPath)
 		if err != nil {
 			return err
