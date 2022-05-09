@@ -2,6 +2,15 @@
 
 A JFrog CLI plugin to facilitate retention in Artifactory.
 
+⚠️ **Work in progress** ⚠️
+Don't point this at your production instance
+
+## TL;DR
+
+Deletes artifacts matching all [File Specs](https://www.jfrog.com/confluence/display/JFROG/Using+File+Specs) found in a given directory.
+
+Currently just prevents you from having to run [`jfrog rt delete`](https://www.jfrog.com/confluence/display/CLI/CLI+for+JFrog+Artifactory#CLIforJFrogArtifactory-DeletingFiles) multiple times, but a policy templating system is in the works.
+
 ## Installation
 
 This plugin isn't currently hosted anywhere, so you'll be building it locally.
@@ -13,45 +22,13 @@ You can use the [build.sh](scripts/build.sh) and [install.sh](scripts/install.sh
 ### Commands
 
 - run
+  - Usage: `jfrog rt-retention run [command options] <filespecs-path>`
+
   - Arguments:
-    - config-file - Path to the retention configuration file
-  - Flags:
-    - dry-run: Set to true to disable communication with Artifactory **[Default: false]**
-    - verbose: Set to true to output more verbose logging **[Default: false]**
-  - Example: `$ jfrog rt-retention run --dry-run examples/config.toml`
+      - filespecs-path    _(Path to the filespecs file/dir)_
 
-### Environment variables
+  - Options:
+    - --dry-run    _disable communication with Artifactory [Default: **true**]_
+    - --verbose    _output verbose logging [Default: false]_
+    - --recursive    _recursively find filespecs files in the given dir [Default: false]_
 
-N/A
-
-## Retention configuration
-
-Retention configuration is kept in a [TOML](https://toml.io/en/) file.
-Currently, only artifact retention is supported.
-
-### Artifact retention
-
-Artifact retention uses [AQL](https://www.jfrog.com/confluence/display/JFROG/Artifactory+Query+Language) queries to match files you wish to delete.
-
-Artifact retention configuration consists of the following:
-
-- **Required**:
-  - `AqlPath` (`string`): Path to an AQL query that matches artifacts you wish to delete
-- **Optional**:
-  - `Name` (`string`): Descriptive name for the retention policy
-  - `Offset` (`int`): Amount to offset results by
-  - `SortBy` (`[]string`): Fields to sort results by
-  - `SortOrder` (`string`): Order to sort results by (`"asc"` or `"desc"`)
-
-```ini
-[[Artifact]]
-Name="foo-local: Remove all artifacts"
-AqlPath="example/retention-policies/foo-local.aql"
-
-[[Artifact]]
-Name="bar-local: Keep 5 latest artifacts"
-AqlPath="example/retention-policies/bar-local.aql"
-Offset=5
-SortBy=["updated"]
-SortOrder="desc"
-```

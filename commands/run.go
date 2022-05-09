@@ -37,7 +37,7 @@ func GetRunCommand() components.Command {
 func GetRunArguments() []components.Argument {
 	return []components.Argument{
 		{
-			Name:        "filespecs",
+			Name:        "filespecs-path",
 			Description: "Path to the filespecs file/dir",
 		},
 	}
