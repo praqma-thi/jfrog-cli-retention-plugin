@@ -3,11 +3,8 @@ module github.com/praqma-thi/jfrog-cli-retention-plugin
 go 1.18
 
 require (
-	github.com/BurntSushi/toml v1.1.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/jfrog/jfrog-cli-core/v2 v2.13.4
 	github.com/jfrog/jfrog-client-go v1.12.3
-	github.com/stretchr/testify v1.7.1
 )
 
 require (
@@ -53,7 +50,6 @@ require (
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pierrec/lz4/v4 v4.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
@@ -76,5 +72,4 @@ require (
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
