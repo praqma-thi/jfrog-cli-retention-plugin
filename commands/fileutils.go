@@ -11,26 +11,26 @@ import (
 )
 
 func FindFiles(root string, recursive bool) ([]string, error) {
-	rootInfo, err := os.Stat(root)
-	if err != nil {
-		return nil, err
+	rootInfo, statErr := os.Stat(root)
+	if statErr != nil {
+		return nil, statErr
 	}
 
 	if rootInfo.IsDir() {
 		if recursive {
 			var files []string
-			err := filepath.Walk(root, func(path string, entry os.FileInfo, err error) error {
+			walkErr := filepath.Walk(root, func(path string, entry os.FileInfo, err error) error {
 				if !entry.IsDir() {
 					files = append(files, path)
 				}
 				return nil
 			})
-			return files, err
+			return nil, walkErr
 
 		} else {
-			entries, err := ioutil.ReadDir(root)
-			if err != nil {
-				return nil, err
+			entries, readErr := ioutil.ReadDir(root)
+			if readErr != nil {
+				return nil, readErr
 			}
 
 			files := []string{}
