@@ -1,0 +1,17 @@
+{
+    "files": [
+        {
+            "pattern": "generic-local/*.rpm"
+        },
+        {
+            "aql": {
+                "items.find": {
+                    "repo": "generic-local",
+                    "name": {
+                        "$match": "*.deb"
+                    }
+                }
+            }
+        }
+    ]
+}

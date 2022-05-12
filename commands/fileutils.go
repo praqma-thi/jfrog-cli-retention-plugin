@@ -25,8 +25,7 @@ func FindFiles(root string, recursive bool) ([]string, error) {
 				}
 				return nil
 			})
-			return nil, walkErr
-
+			return files, walkErr
 		} else {
 			entries, readErr := ioutil.ReadDir(root)
 			if readErr != nil {

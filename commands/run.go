@@ -47,7 +47,7 @@ func GetRunFlags() []components.Flag {
 	return []components.Flag{
 		components.BoolFlag{
 			Name:         "dry-run",
-			Description:  "disable communication with Artifactory",
+			Description:  "disable deletion of artifacts",
 			DefaultValue: true,
 		},
 		components.BoolFlag{
@@ -96,14 +96,18 @@ func RunCmd(context *components.Context) error {
 	log.Info("Parsing retention configuration")
 	fileSpecsFiles, err := FindFiles(runConfig.fileSpecsPath, runConfig.recursive)
 
-	log.Info("Running", len(fileSpecsFiles), "policies")
+	if len(fileSpecsFiles) == 0 {
+		log.Warn("Found no FileSpec files")
+	} else {
+		log.Info("Found", len(fileSpecsFiles), "FileSpec files")
+	}
+
 	if runConfig.verbose {
 		for _, file := range fileSpecsFiles {
 			log.Info("    " + file)
 		}
 	}
 
-	log.Info("Running", len(fileSpecsFiles), "policies")
 	if err = RunArtifactRetention(artifactoryManager, fileSpecsFiles); err != nil {
 		return err
 	}
