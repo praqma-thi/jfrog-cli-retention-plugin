@@ -68,9 +68,9 @@ func GetRunEnvVar() []components.EnvVar {
 }
 
 func RunCmd(context *components.Context) error {
-	runConfig, err := ParseRunConfig(context)
-	if err != nil {
-		return err
+	runConfig, argErr := ParseRunConfig(context)
+	if argErr != nil {
+		return argErr
 	}
 
 	if runConfig.verbose {
@@ -82,19 +82,22 @@ func RunCmd(context *components.Context) error {
 	}
 
 	log.Info("Fetching Artifactory details")
-	artifactoryDetails, err := GetArtifactoryDetails(context)
-	if err != nil {
-		return err
+	artifactoryDetails, cfgErr := GetArtifactoryDetails(context)
+	if cfgErr != nil {
+		return cfgErr
 	}
 
 	log.Info("Configuring Artifactory manager")
-	artifactoryManager, err := core_utils.CreateServiceManager(artifactoryDetails, 3, 5000, runConfig.dryRun)
-	if err != nil {
-		return err
+	artifactoryManager, rtfErr := core_utils.CreateServiceManager(artifactoryDetails, 3, 5000, runConfig.dryRun)
+	if rtfErr != nil {
+		return rtfErr
 	}
 
-	log.Info("Parsing retention configuration")
-	fileSpecsFiles, err := FindFiles(runConfig.fileSpecsPath, runConfig.recursive)
+	log.Info("Collecting retention files")
+	fileSpecsFiles, findErr := FindFiles(runConfig.fileSpecsPath, runConfig.recursive)
+	if findErr != nil {
+		return findErr
+	}
 
 	if len(fileSpecsFiles) == 0 {
 		log.Warn("Found no FileSpec files")
@@ -108,8 +111,8 @@ func RunCmd(context *components.Context) error {
 		}
 	}
 
-	if err = RunArtifactRetention(artifactoryManager, fileSpecsFiles); err != nil {
-		return err
+	if retentionErr := RunArtifactRetention(artifactoryManager, fileSpecsFiles); retentionErr != nil {
+		return retentionErr
 	}
 
 	log.Info("Done")
@@ -131,9 +134,9 @@ func ParseRunConfig(context *components.Context) (*RunConfiguration, error) {
 }
 
 func GetArtifactoryDetails(c *components.Context) (*config.ServerDetails, error) {
-	details, err := commands.GetConfig("", false)
-	if err != nil {
-		return nil, err
+	details, cfgErr := commands.GetConfig("", false)
+	if cfgErr != nil {
+		return nil, cfgErr
 	}
 
 	if details.Url == "" {
@@ -141,9 +144,8 @@ func GetArtifactoryDetails(c *components.Context) (*config.ServerDetails, error)
 	}
 
 	details.Url = client_utils.AddTrailingSlashIfNeeded(details.Url)
-	err = config.CreateInitialRefreshableTokensIfNeeded(details)
-	if err != nil {
-		return nil, err
+	if tokenErr := config.CreateInitialRefreshableTokensIfNeeded(details); tokenErr != nil {
+		return nil, tokenErr
 	}
 
 	return details, nil
@@ -154,19 +156,21 @@ func RunArtifactRetention(artifactoryManager artifactory.ArtifactoryServicesMana
 	for i, file := range fileSpecsFiles {
 		log.Info(i+1, "/", totalFiles, ":", file)
 
-		deleteParams, err := ParseDeleteParams(file)
-		if err != nil {
-			return err
+		deleteParams, parseErr := ParseDeleteParams(file)
+		if parseErr != nil {
+			return parseErr
 		}
 
 		for _, dp := range deleteParams {
-			pathsToDelete, err := artifactoryManager.GetPathsToDelete(dp)
-			if err != nil {
-				return err
+			pathsToDelete, pathsErr := artifactoryManager.GetPathsToDelete(dp)
+			if pathsErr != nil {
+				return pathsErr
 			}
 			defer pathsToDelete.Close()
 
-			artifactoryManager.DeleteFiles(pathsToDelete)
+			if _, delErr := artifactoryManager.DeleteFiles(pathsToDelete); delErr != nil {
+				return delErr
+			}
 		}
 	}
 
