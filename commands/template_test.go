@@ -11,33 +11,19 @@ import (
 )
 
 func TestTemplating(t *testing.T) {
-	jsonText := `
-	{
-		"some-template": [
-			{ "Repo": "bingo-local" },
-			{ "Repo": "bango-local" },
-			{ "Repo": "bongo-local" }
-		]
-	}`
-
-	someTemplateText := `
-		"files": [{
-			"aql": {
-				"items.find": {
-					"repo": "{{.Repo}}",
-				}
-			}
-		}]
-	`
+	subscriptionsFile, readErr := os.ReadFile("../examples/subscriptions.json")
+	require.NoError(t, readErr)
 
 	var subscriptions map[string][]interface{}
-	jsonErr := json.Unmarshal([]byte(jsonText), &subscriptions)
+	jsonErr := json.Unmarshal(subscriptionsFile, &subscriptions)
 	require.NoError(t, jsonErr)
 
 	for subscription, entries := range subscriptions {
 		fmt.Println("Subscription:", subscription)
+		templateText, readErr := os.ReadFile("../examples/templates/" + subscription + ".json")
+		require.NoError(t, readErr)
 
-		someTemplate, parseErr := template.New(subscription).Parse(someTemplateText)
+		someTemplate, parseErr := template.New(subscription).Parse(string(templateText))
 		require.NoError(t, parseErr)
 		for _, entry := range entries {
 			templatingErr := someTemplate.Execute(os.Stdout, entry)

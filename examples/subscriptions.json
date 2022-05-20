@@ -1,0 +1,7 @@
+{
+    "wipe-repo": [
+        { "Repo": "bingo-local" },
+        { "Repo": "bango-local" },
+        { "Repo": "bongo-local" }
+    ]
+}
