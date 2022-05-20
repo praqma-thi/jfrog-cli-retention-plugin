@@ -9,7 +9,7 @@ Don't point this at your production instance
 
 Deletes artifacts matching all [File Specs](https://www.jfrog.com/confluence/display/JFROG/Using+File+Specs) found in a given directory.
 
-Allows for easy templating of retention policies through a JSON configuration file.
+Allows for generation of FileSpecs files through Go templates and a JSON configuration file.
 
 ## Installation
 
@@ -33,13 +33,53 @@ You can use the [build.sh](scripts/build.sh) and [install.sh](scripts/install.sh
     - --recursive    _recursively find filespecs files in the given dir [Default: false]_
 
 - expand
-  - Usage: `jf rt-retention expand [command options] <subscriptions-path> <templates-path> <output-path>`
+  - Usage: `jf rt-retention expand [command options] <config-path> <templates-path> <output-path>`
   
   - Arguments:
-    - subscriptions-path    _(Path to the subscriptions JSON file)_
+    - config-path    _(Path to the JSON config file)_
     - templates-path    _(Path to the templates dir)_
     - output-path    _(Path to output the generated filespecs)_
 
   - Options:
     - --verbose      _output verbose logging [Default: false]_
     - --recursive    _recursively find templates in the given dir [Default: false]_
+
+## Templating
+
+This plugins allows you to generate retention policies using Go templates and a JSON config file.
+
+### Templates
+
+Templates use values from the JSON config file to generate FileSpec files.
+
+`delete-older-than.json`:
+```json
+{
+    "files": [{
+        "aql": {
+            "items.find": {
+                "repo": "{{.Repo}}",
+                "created" : {"$before" : "{{.Time}}"}
+            }
+        }
+    }]
+}
+```
+
+### JSON config
+
+The JSON config file contains a key for each template, with an array of entries for that template.
+Each entry will result in a FileSpecs file being generated.
+
+`config.json`:
+```json
+{
+    "delete-everything": [
+        { "Repo": "foo-dev-local" },
+        { "Repo": "bar-dev-local" }
+    ],
+    "delete-older-than": [
+        { "Repo": "baz-dev-local", "Time": "30d" }
+    ]
+}
+```

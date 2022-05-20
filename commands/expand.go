@@ -14,11 +14,11 @@ import (
 )
 
 type ExpandConfiguration struct {
-	subscriptionsPath string
-	templatesPath     string
-	outputPath        string
-	recursive         bool
-	verbose           bool
+	configPath    string
+	templatesPath string
+	outputPath    string
+	recursive     bool
+	verbose       bool
 }
 
 func GetExpandCommand() components.Command {
@@ -38,8 +38,8 @@ func GetExpandCommand() components.Command {
 func GetExpandArguments() []components.Argument {
 	return []components.Argument{
 		{
-			Name:        "subscriptions-path",
-			Description: "Path to the subscriptions JSON file",
+			Name:        "config-path",
+			Description: "Path to the JSON config file",
 		},
 		{
 			Name:        "templates-path",
@@ -79,15 +79,15 @@ func ExpandCmd(context *components.Context) error {
 
 	if expandConfig.verbose {
 		log.Info("expandConfig:")
-		log.Info("    subscriptionsPath:", expandConfig.subscriptionsPath)
+		log.Info("    configPath:", expandConfig.configPath)
 		log.Info("    templatesPath:", expandConfig.templatesPath)
 		log.Info("    outputPath:", expandConfig.outputPath)
 		log.Info("    recursive:", expandConfig.recursive)
 		log.Info("    verbose:", expandConfig.verbose)
 	}
 
-	log.Info("Parsing subscriptions file")
-	subscriptionsFile, readErr := os.ReadFile(expandConfig.subscriptionsPath)
+	log.Info("Parsing config file")
+	configFile, readErr := os.ReadFile(expandConfig.configPath)
 	if readErr != nil {
 		return readErr
 	}
@@ -110,31 +110,31 @@ func ExpandCmd(context *components.Context) error {
 		}
 	}
 
-	var subscriptions map[string][]interface{}
-	if jsonErr := json.Unmarshal(subscriptionsFile, &subscriptions); jsonErr != nil {
+	var config map[string][]interface{}
+	if jsonErr := json.Unmarshal(configFile, &config); jsonErr != nil {
 		return jsonErr
 	}
 
-	for subscription, entries := range subscriptions {
-		log.Info("Expanding", subscription)
+	for templateName, entries := range config {
+		log.Info("Expanding", templateName)
 
-		templateText, readErr := os.ReadFile(path.Join(expandConfig.templatesPath, subscription+".json"))
+		templateText, readErr := os.ReadFile(path.Join(expandConfig.templatesPath, templateName+".json"))
 		if readErr != nil {
 			return readErr
 		}
 
-		template, parseErr := template.New(subscription).Parse(string(templateText))
+		template, parseErr := template.New(templateName).Parse(string(templateText))
 		if parseErr != nil {
 			return parseErr
 		}
 
-		if dirErr := os.MkdirAll(path.Join(expandConfig.outputPath, subscription), 0755); dirErr != nil {
+		if dirErr := os.MkdirAll(path.Join(expandConfig.outputPath, templateName), 0755); dirErr != nil {
 			return dirErr
 		}
 
 		for index, entry := range entries {
 
-			resultFile, fileErr := os.Create(path.Join(expandConfig.outputPath, subscription, fmt.Sprint(index, ".json")))
+			resultFile, fileErr := os.Create(path.Join(expandConfig.outputPath, templateName, fmt.Sprint(index, ".json")))
 			if fileErr != nil {
 				return fileErr
 			}
@@ -159,7 +159,7 @@ func ParseExpandConfig(context *components.Context) (*ExpandConfiguration, error
 	}
 
 	var expandConfig = new(ExpandConfiguration)
-	expandConfig.subscriptionsPath = context.Arguments[0]
+	expandConfig.configPath = context.Arguments[0]
 	expandConfig.templatesPath = context.Arguments[1]
 	expandConfig.outputPath = context.Arguments[2]
 	expandConfig.recursive = context.GetBoolFlagValue("recursive")

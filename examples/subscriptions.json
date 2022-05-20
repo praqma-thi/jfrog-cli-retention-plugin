@@ -1,7 +1,0 @@
-{
-    "wipe-repo": [
-        { "Repo": "foo-local" },
-        { "Repo": "bar-local" },
-        { "Repo": "baz-local" }
-    ]
-}

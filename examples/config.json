@@ -1,0 +1,9 @@
+{
+    "delete-everything": [
+        { "Repo": "foo-dev-local" },
+        { "Repo": "bar-dev-local" }
+    ],
+    "delete-older-than": [
+        { "Repo": "baz-dev-local", "Time": "30d" }
+    ]
+}
