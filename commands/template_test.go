@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 	"text/template"
@@ -9,13 +11,16 @@ import (
 )
 
 func TestTemplating(t *testing.T) {
+	jsonText := `
+	{
+		"some-template": [
+			{ "Repo": "bingo-local" },
+			{ "Repo": "bango-local" },
+			{ "Repo": "bongo-local" }
+		]
+	}`
 
-	subscriptions := make([]map[string]string, 0, 3)
-	subscriptions = append(subscriptions, map[string]string{"Repo": "bingo-local"})
-	subscriptions = append(subscriptions, map[string]string{"Repo": "bango-local"})
-	subscriptions = append(subscriptions, map[string]string{"Repo": "bongo-local"})
-
-	templateText := `
+	someTemplateText := `
 		"files": [{
 			"aql": {
 				"items.find": {
@@ -25,9 +30,18 @@ func TestTemplating(t *testing.T) {
 		}]
 	`
 
-	templ, err := template.New("the-retention").Parse(templateText)
-	require.NoError(t, err)
+	var subscriptions map[string][]interface{}
+	jsonErr := json.Unmarshal([]byte(jsonText), &subscriptions)
+	require.NoError(t, jsonErr)
 
-	err = templ.Execute(os.Stdout, subscriptions[0])
-	require.NoError(t, err)
+	for subscription, entries := range subscriptions {
+		fmt.Println("Subscription:", subscription)
+
+		someTemplate, parseErr := template.New(subscription).Parse(someTemplateText)
+		require.NoError(t, parseErr)
+		for _, entry := range entries {
+			templatingErr := someTemplate.Execute(os.Stdout, entry)
+			require.NoError(t, templatingErr)
+		}
+	}
 }
