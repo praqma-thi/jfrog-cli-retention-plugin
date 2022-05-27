@@ -71,15 +71,17 @@ Templates use values from the JSON config file to generate FileSpec files.
 The JSON config file contains a key for each template, with an array of entries for that template.
 Each entry will result in a FileSpecs file being generated.
 
+If the entry has a **Name** property, it's value will be used as the FileSpecs file name.
+
 `config.json`:
 ```json
 {
     "delete-everything": [
-        { "Repo": "foo-dev-local" },
-        { "Repo": "bar-dev-local" }
+        { "Name": "foo-dev", "Repo": "foo-dev-local" },
+        { "Name": "bar-dev", "Repo": "bar-dev-local" }
     ],
     "delete-older-than": [
-        { "Repo": "baz-dev-local", "Time": "30d" }
+        { "Name": "baz-dev", "Repo": "baz-dev-local", "Time": "30d" }
     ]
 }
 ```

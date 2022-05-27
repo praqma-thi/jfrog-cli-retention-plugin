@@ -133,8 +133,14 @@ func ExpandCmd(context *components.Context) error {
 		}
 
 		for index, entry := range entries {
+			var fileName string
+			if name, hasName := entry.(map[string]interface{})["Name"]; hasName {
+				fileName = fmt.Sprint(name, ".json")
+			} else {
+				fileName = fmt.Sprint(templateName, "-", index, ".json")
+			}
 
-			resultFile, fileErr := os.Create(path.Join(expandConfig.outputPath, templateName, fmt.Sprint(index, ".json")))
+			resultFile, fileErr := os.Create(path.Join(expandConfig.outputPath, templateName, fileName))
 			if fileErr != nil {
 				return fileErr
 			}

@@ -1,9 +1,9 @@
 {
     "delete-everything": [
-        { "Repo": "foo-dev-local" },
-        { "Repo": "bar-dev-local" }
+        { "Name": "foo-dev", "Repo": "foo-dev-local" },
+        { "Name": "bar-dev", "Repo": "bar-dev-local" }
     ],
     "delete-older-than": [
-        { "Repo": "baz-dev-local", "Time": "30d" }
+        { "Name": "baz-dev", "Repo": "baz-dev-local", "Time": "30d" }
     ]
 }
