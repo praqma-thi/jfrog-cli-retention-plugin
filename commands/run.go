@@ -94,15 +94,15 @@ func RunCmd(context *components.Context) error {
 	}
 
 	log.Info("Collecting retention files")
-	fileSpecsFiles, findErr := FindFiles(runConfig.fileSpecsPath, runConfig.recursive)
+	fileSpecsFiles, findErr := FindFiles(runConfig.fileSpecsPath, "*.json", runConfig.recursive)
 	if findErr != nil {
 		return findErr
 	}
 
 	if len(fileSpecsFiles) == 0 {
-		log.Warn("Found no FileSpec files")
+		log.Warn("Found no JSON files")
 	} else {
-		log.Info("Found", len(fileSpecsFiles), "FileSpec files")
+		log.Info("Found", len(fileSpecsFiles), "JSON files")
 	}
 
 	if runConfig.verbose {

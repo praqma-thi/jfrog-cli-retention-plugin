@@ -5,12 +5,13 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 )
 
-func FindFiles(root string, recursive bool) ([]string, error) {
+func FindFiles(root string, filetype string, recursive bool) ([]string, error) {
 	rootInfo, statErr := os.Stat(root)
 	if statErr != nil {
 		return nil, statErr
@@ -20,7 +21,7 @@ func FindFiles(root string, recursive bool) ([]string, error) {
 		if recursive {
 			var files []string
 			walkErr := filepath.Walk(root, func(path string, entry os.FileInfo, err error) error {
-				if !entry.IsDir() {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), filetype) {
 					files = append(files, path)
 				}
 				return nil
@@ -34,7 +35,7 @@ func FindFiles(root string, recursive bool) ([]string, error) {
 
 			files := []string{}
 			for _, entry := range entries {
-				if !entry.IsDir() {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), filetype) {
 					files = append(files, root+"/"+entry.Name())
 				}
 			}

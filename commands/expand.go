@@ -93,15 +93,15 @@ func ExpandCmd(context *components.Context) error {
 	}
 
 	log.Info("Collecting template files")
-	templateFiles, findErr := FindFiles(expandConfig.templatesPath, expandConfig.recursive)
+	templateFiles, findErr := FindFiles(expandConfig.templatesPath, ".json", expandConfig.recursive)
 	if findErr != nil {
 		return findErr
 	}
 
 	if len(templateFiles) == 0 {
-		log.Warn("Found no template files")
+		log.Warn("Found no JSON files")
 	} else {
-		log.Info("Found", len(templateFiles), "template files")
+		log.Info("Found", len(templateFiles), "JSON files")
 	}
 
 	if expandConfig.verbose {
