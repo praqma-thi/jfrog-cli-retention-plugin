@@ -110,7 +110,7 @@ func ExpandCmd(context *components.Context) error {
 		}
 	}
 
-	var config map[string][]interface{}
+	var config map[string][]map[string]interface{}
 	if jsonErr := json.Unmarshal(configFile, &config); jsonErr != nil {
 		return jsonErr
 	}
@@ -134,7 +134,7 @@ func ExpandCmd(context *components.Context) error {
 
 		for index, entry := range entries {
 			var fileName string
-			if name, hasName := entry.(map[string]interface{})["Name"]; hasName {
+			if name, hasName := entry["Name"]; hasName {
 				fileName = fmt.Sprint(name, ".json")
 			} else {
 				fileName = fmt.Sprint(templateName, "-", index, ".json")
