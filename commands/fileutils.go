@@ -11,7 +11,7 @@ import (
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 )
 
-func FindFiles(root string, filetype string, recursive bool) ([]string, error) {
+func FindFiles(root string, suffix string, recursive bool) ([]string, error) {
 	rootInfo, statErr := os.Stat(root)
 	if statErr != nil {
 		return nil, statErr
@@ -21,7 +21,7 @@ func FindFiles(root string, filetype string, recursive bool) ([]string, error) {
 		if recursive {
 			var files []string
 			walkErr := filepath.Walk(root, func(path string, entry os.FileInfo, err error) error {
-				if !entry.IsDir() && strings.HasSuffix(entry.Name(), filetype) {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), suffix) {
 					files = append(files, path)
 				}
 				return nil
@@ -35,7 +35,7 @@ func FindFiles(root string, filetype string, recursive bool) ([]string, error) {
 
 			files := []string{}
 			for _, entry := range entries {
-				if !entry.IsDir() && strings.HasSuffix(entry.Name(), filetype) {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), suffix) {
 					files = append(files, root+"/"+entry.Name())
 				}
 			}

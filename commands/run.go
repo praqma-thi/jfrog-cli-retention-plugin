@@ -94,7 +94,7 @@ func RunCmd(context *components.Context) error {
 	}
 
 	log.Info("Collecting retention files")
-	fileSpecsFiles, findErr := FindFiles(runConfig.fileSpecsPath, "*.json", runConfig.recursive)
+	fileSpecsFiles, findErr := FindFiles(runConfig.fileSpecsPath, ".json", runConfig.recursive)
 	if findErr != nil {
 		return findErr
 	}
