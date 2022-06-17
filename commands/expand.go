@@ -123,7 +123,7 @@ func ExpandCmd(context *components.Context) error {
 			return readErr
 		}
 
-		template, parseErr := template.New(templateName).Parse(string(templateText))
+		template, parseErr := template.New(templateName).Option("missingkey=error").Parse(string(templateText))
 		if parseErr != nil {
 			return parseErr
 		}
