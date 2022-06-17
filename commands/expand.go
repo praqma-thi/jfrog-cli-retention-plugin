@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"os"
 	"path"
 	"strconv"
+	"text/template"
 
 	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	"github.com/jfrog/jfrog-client-go/utils/log"
@@ -132,6 +132,8 @@ func ExpandCmd(context *components.Context) error {
 			return dirErr
 		}
 
+		// TODO warn if there's no entries for a template
+		// also look at: https://github.com/Masterminds/sprig
 		for index, entry := range entries {
 			var fileName string
 			if name, hasName := entry["Name"]; hasName {

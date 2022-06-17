@@ -5,5 +5,8 @@
     ],
     "delete-older-than": [
         { "Name": "baz-dev", "Repo": "baz-dev-local", "Time": "30d" }
+    ],
+    "nuke-repos": [
+        { "Name": "all", "Repositories": [ "bingo-dev-local", "bango-dev-local", "bongo-dev-local" ] }
     ]
 }

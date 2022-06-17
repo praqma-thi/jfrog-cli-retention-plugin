@@ -1,0 +1,10 @@
+{
+    "files": [{
+        "aql": {
+            "items.find": {
+                "repo": "baz-dev-local",
+                "created" : {"$before" : "30d"}
+            }
+        }
+    }]
+}
