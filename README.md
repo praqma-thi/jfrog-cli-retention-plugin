@@ -1,3 +1,7 @@
+> **Note**
+>
+> This repository has moved to [verifa/rt-retention](https://github.com/verifa/rt-retention)
+
 # rt-retention
 
 A JFrog CLI plugin to facilitate artifact retention in Artifactory.
